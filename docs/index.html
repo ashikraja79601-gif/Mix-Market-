@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apna Bazaar — Food, Grocery & Marketing</title>
+<style>
+:root{--green:#137a4b;--dark:#153528;--cream:#f6f8f4;--orange:#ff9b42}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:var(--cream);color:#17231d}
+header{background:var(--green);color:white;padding:18px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.logo{font-size:24px;font-weight:800}.tag{font-size:12px;opacity:.9}
+.cart{background:white;color:var(--green);border:0;border-radius:22px;padding:10px 16px;font-weight:bold;cursor:pointer}
+.hero{padding:38px 5%;background:linear-gradient(120deg,#e2f4e9,#fff1df);display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.hero h1{font-size:clamp(28px,5vw,46px);margin:0 0 10px;color:var(--dark)}.hero p{max-width:560px;line-height:1.5}
+.pill{display:inline-block;background:#fff;border-radius:20px;padding:8px 13px;color:var(--green);font-weight:bold}
+main{max-width:1100px;margin:auto;padding:25px 5%}
+.tabs{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 22px}
+.tabs button{border:1px solid #cbd9cf;background:white;border-radius:22px;padding:11px 17px;cursor:pointer;font-weight:bold}
+.tabs button.active{background:var(--green);color:white;border-color:var(--green)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}
+.card{background:white;border:1px solid #e2e9e3;border-radius:16px;padding:16px;box-shadow:0 3px 12px #173b2610}
+.emoji{font-size:38px}.card h3{margin:8px 0}.muted{color:#65736a;font-size:14px;line-height:1.45}
+.price{font-weight:800;color:var(--green);margin:12px 0}
+.add,.primary{background:var(--green);color:white;border:0;border-radius:9px;padding:10px 14px;cursor:pointer;font-weight:bold}
+section.panel{display:none}section.panel.show{display:block}
+.promo{background:#fff5e9;border:1px dashed #e6a35e;padding:18px;border-radius:14px;margin-bottom:16px}
+form{display:grid;gap:10px;max-width:520px}input,textarea,select{padding:12px;border:1px solid #ccd8ce;border-radius:9px;font:inherit;width:100%}
+footer{text-align:center;padding:25px;color:#68756c;font-size:13px}
+#cartBox{background:white;border:1px solid #dce6de;border-radius:14px;padding:16px;margin:18px 0;display:none}
+.cartline{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid #eee}
+.smallbtn{border:0;background:#f2e6dc;border-radius:7px;padding:5px 9px;cursor:pointer}
+.notice{background:#fff8d9;padding:12px;border-radius:10px;font-size:13px;margin-top:14px}
+</style>
+</head>
+<body>
+<header>
+ <div><div class="logo">🛍️ Apna Bazaar</div><div class="tag">Food • Grocery • Local Business Marketing</div></div>
+ <button class="cart" onclick="toggleCart()">🛒 Cart (<span id="count">0</span>)</button>
+</header>
+<div class="hero">
+ <div><span class="pill">आपका अपना ऑनलाइन बाज़ार</span><h1>जो चाहिए, एक ही जगह।</h1>
+ <p>खाना, रोज़मर्रा का सामान और स्थानीय दुकानदारों के ऑफ़र—सब एक आसान वेबसाइट पर।</p></div>
+ <div style="font-size:78px">🍕 🥦 🛒</div>
+</div>
+<main>
+ <div class="tabs">
+  <button class="active" onclick="showTab('food',this)">🍕 Food Delivery</button>
+  <button onclick="showTab('grocery',this)">🥬 Grocery</button>
+  <button onclick="showTab('marketing',this)">📣 Marketing</button>
+ </div>
+ <div id="cartBox"><h2>आपका Cart</h2><div id="cartItems"></div><p><b>कुल: ₹<span id="total">0</span></b></p><button class="primary" onclick="checkout()">Order Details भरें</button></div>
+
+ <section id="food" class="panel show">
+  <h2>🍕 Food Delivery</h2><p class="muted">डेमो मेन्यू — अपने इलाके के रेस्टोरेंट और असली कीमतें बाद में जोड़ें।</p>
+  <div class="grid" id="foodGrid"></div>
+ </section>
+ <section id="grocery" class="panel">
+  <h2>🥬 Grocery Store</h2><p class="muted">रोज़मर्रा की ज़रूरत का सामान।</p>
+  <div class="grid" id="groceryGrid"></div>
+ </section>
+ <section id="marketing" class="panel">
+  <h2>📣 Local Business Marketing</h2>
+  <div class="promo"><h3>अपने बिज़नेस का प्रचार करें</h3><p>स्थानीय दुकानदार यहाँ अपना ऑफ़र या दुकान की जानकारी दे सकते हैं।</p></div>
+  <form onsubmit="submitAd(event)">
+   <input id="shopName" placeholder="दुकान / बिज़नेस का नाम" required>
+   <input id="owner" placeholder="आपका नाम" required>
+   <input id="phone" placeholder="मोबाइल नंबर" inputmode="numeric" required>
+   <textarea id="adText" rows="3" placeholder="ऑफ़र या दुकान की जानकारी लिखें" required></textarea>
+   <button class="primary">डेमो विज्ञापन जमा करें</button>
+  </form>
+  <div id="adResult" class="notice" style="display:none"></div>
+ </section>
+ <div class="notice"><b>ज़रूरी जानकारी:</b> यह शुरुआती फ्रंटएंड डेमो है। अभी ऑर्डर सच में किसी दुकान तक नहीं जाता, पेमेंट, लॉगिन, लाइव डिलीवरी ट्रैकिंग और एडमिन पैनल जुड़े नहीं हैं। इन्हें चलाने के लिए सुरक्षित backend/database और hosting सेटअप करना होगा।</div>
+</main>
+<footer>© 2026 Apna Bazaar • Demo Website</footer>
+<script>
+const products={
+ food:[['🍕','Veg Pizza','₹149',149],['🍔','Burger','₹99',99],['🥪','Sandwich','₹79',79],['🍛','Veg Thali','₹129',129]],
+ grocery:[['🍚','चावल 1 kg','₹60',60],['🥛','दूध 1 L','₹58',58],['🥔','आलू 1 kg','₹30',30],['🧅','प्याज़ 1 kg','₹35',35],['🍎','सेब 1 kg','₹140',140],['🫖','चाय 250 g','₹95',95]]
+};
+let cart=[];
+function renderProducts(){
+ for(const type of ['food','grocery']){
+  document.getElementById(type+'Grid').innerHTML=products[type].map((p,i)=>`
+   <article class="card"><div class="emoji">${p[0]}</div><h3>${p[1]}</h3><div class="price">${p[2]}</div><button class="add" onclick="addToCart('${type}',${i})">Cart में जोड़ें</button></article>`).join('');
+ }
+}
+function showTab(id,btn){
+ document.querySelectorAll('.panel').forEach(x=>x.classList.remove('show'));
+ document.getElementById(id).classList.add('show');
+ document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));
+ btn.classList.add('active');
+}
+function addToCart(type,i){
+ const p=products[type][i], key=type+'-'+i, old=cart.find(x=>x.key===key);
+ if(old)old.qty++;else cart.push({key,name:p[1],price:p[3],qty:1});
+ updateCart();document.getElementById('cartBox').style.display='block';
+}
+function updateCart(){
+ document.getElementById('count').textContent=cart.reduce((s,x)=>s+x.qty,0);
+ document.getElementById('cartItems').innerHTML=cart.length?cart.map(x=>`<div class="cartline"><span>${x.name} × ${x.qty}</span><span>₹${x.price*x.qty} <button class="smallbtn" onclick="removeItem('${x.key}')">हटाएँ</button></span></div>`).join(''):'Cart खाली है';
+ document.getElementById('total').textContent=cart.reduce((s,x)=>s+x.price*x.qty,0);
+}
+function removeItem(key){cart=cart.filter(x=>x.key!==key);updateCart()}
+function toggleCart(){const b=document.getElementById('cartBox');b.style.display=b.style.display==='block'?'none':'block'}
+function checkout(){
+ if(!cart.length){alert('पहले Cart में सामान जोड़ें।');return}
+ const lines=cart.map(x=>`${x.name} x ${x.qty} = ₹${x.price*x.qty}`).join('\\n');
+ const total=cart.reduce((s,x)=>s+x.price*x.qty,0);
+ const name=prompt('अपना नाम लिखें:');if(!name)return;
+ const phone=prompt('मोबाइल नंबर लिखें:');if(!phone)return;
+ const address=prompt('डिलीवरी का पता लिखें:');if(!address)return;
+ alert('डेमो ऑर्डर तैयार!\\nनाम: '+name+'\\nमोबाइल: '+phone+'\\nपता: '+address+'\\n\\n'+lines+'\\nकुल: ₹'+total+'\\n\\nअभी यह ऑर्डर सर्वर पर नहीं भेजा गया है।');
+}
+function submitAd(e){
+ e.preventDefault();
+ const data={shop:shopName.value,owner:owner.value,phone:phone.value,ad:adText.value};
+ document.getElementById('adResult').style.display='block';
+ document.getElementById('adResult').textContent='डेमो विज्ञापन दर्ज हुआ: '+data.shop+' — '+data.ad+' (यह जानकारी अभी सर्वर पर सेव नहीं हुई है।)';
+ e.target.reset();
+}
+renderProducts();
+</script>
+</body>
+</html>
